@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Flask Calculator</h1>
+        <input type="text" id="calc-input" readonly>
+        <div class="buttons">
+            <button onclick="appendNumber(1)">1</button>
+            <button onclick="appendNumber(2)">2</button>
+            <button onclick="appendOperator('+')">+</button>
+            <button onclick="appendNumber(3)">3</button>
+            <button onclick="appendNumber(4)">4</button>
+            <button onclick="appendOperator('-')">-</button>
+            <button onclick="appendNumber(5)">5</button>
+            <button onclick="appendNumber(6)">6</button>
+            <button onclick="appendOperator('*')">*</button>
+            <button onclick="appendNumber(7)">7</button>
+            <button onclick="appendNumber(8)">8</button>
+            <button onclick="appendOperator('/')">/</button>
+            <button onclick="appendNumber(9)">9</button>
+            <button onclick="appendNumber(0)">0</button>
+            <button onclick="clearInput()">C</button>
+            <button onclick="calculate()">=</button>
+        </div>
+        <div id="error-message"></div>
+    </div>
+
+    <script>
+        function appendNumber(number) {
+            document.getElementById('calc-input').value += number;
+        }
+
+        function appendOperator(operator) {
+            document.getElementById('calc-input').value += operator;
+        }
+
+        function clearInput() {
+            document.getElementById('calc-input').value = '';
+            document.getElementById('error-message').innerText = '';
+        }
+
+        function calculate() {
+            var expression = document.getElementById('calc-input').value;
+            $.ajax({
+                url: '/calculate',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ expression: expression }),
+                success: function(response) {
+                    if (response.result !== undefined) {
+                        document.getElementById('calc-input').value = response.result;
+                    } else if (response.error) {
+                        document.getElementById('error-message').innerText = response.error;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
